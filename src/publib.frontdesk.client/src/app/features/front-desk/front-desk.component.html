@@ -1,0 +1,74 @@
+<div class="mt-3 mx-auto w-full max-w-4xl px-4">
+    <div class="flex justify-center mb-8">
+        <h1 class="text-3xl font-bold">Front Desk</h1>
+    </div>
+
+    <div class="flex flex-col space-y-8">
+        <!-- Membership Section -->
+        <div class="border border-gray-300 p-4 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4">Apply Membership</h2>
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="w-1/3">
+                    <label class="block mb-1 text-sm font-medium" for="firstName">First Name</label>
+                    <input id="firstName" #firstNameInput type="text" class="w-full p-2 border rounded" placeholder="First Name">
+                </div>
+                <div class="w-1/3">
+                    <label class="block mb-1 text-sm font-medium" for="lastName">Last Name</label>
+                    <input id="lastName" #lastNameInput type="text" class="w-full p-2 border rounded" placeholder="Last Name">
+                </div>
+                <div class="w-1/3">
+                    <label class="block mb-1 text-sm font-medium" for="city">City</label>
+                    <input id="city" #cityInput type="text" class="w-full p-2 border rounded" placeholder="City">
+                </div>
+            </div>
+            <div class="flex items-center">
+                <button (click)="applyMembership(lastNameInput.value, firstNameInput.value, cityInput.value)" class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">Apply Membership</button>
+            </div>
+        </div>
+
+        <!-- Book Reservation Section -->
+        <div class="border border-gray-300 p-4 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4">Reserve a Book</h2>
+            <div class="flex space-x-4 mb-4">
+                <div class="w-1/2">
+                    <label class="block mb-1 text-sm font-medium" for="userId">User Id</label>
+                    <input id="userId" #userIdInput type="number" class="w-full p-2 border rounded" placeholder="123456789">
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="w-1/2">
+                    <label class="block mb-1 text-sm font-medium" for="reservationTitle">Title</label>
+                    <input id="reservationTitle" #reservationTitleInput type="text" class="w-full p-2 border rounded" placeholder="Book Title">
+                </div>
+                <div class="w-1/2">
+                    <label class="block mb-1 text-sm font-medium" for="publicationYear">Publication Year</label>
+                    <input id="publicationYear" #yearInput type="number" class="w-full p-2 border rounded" placeholder="2024">
+                </div>
+            </div>
+            <div class="flex items-center">
+                <button (click)="sendReservation(userIdInput.value, reservationTitleInput.value, yearInput.value)" class="w-full px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition duration-300">Reserve Book</button>
+            </div>
+        </div>
+        <!-- Book Provision -->
+        <div class="border border-gray-300 p-4 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4">Book Provision</h2>
+            <div class="flex space-x-4 mb-4">
+                <div class="w-full">
+                    <label class="block mb-1 text-sm font-medium" for="additionalUserId">User Id</label>
+                    <input id="additionalUserId" [value]="userId" type="number" class="w-full p-2 border rounded bg-gray-100" readonly>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="w-1/2">
+                    <label class="block mb-1 text-sm font-medium" for="additionalTitle">Title</label>
+                    <input id="additionalTitle" [value]="title" type="text" class="w-full p-2 border rounded bg-gray-100" readonly>
+                </div>
+                <div class="w-1/2">
+                    <label class="block mb-1 text-sm font-medium" for="additionalYear">Year</label>
+                    <input id="additionalYear" [value]="year" type="number" class="w-full p-2 border rounded bg-gray-100" readonly>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

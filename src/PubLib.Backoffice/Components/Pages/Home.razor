@@ -1,0 +1,105 @@
+@page "/"
+
+@using PubLib.Backoffice.WebApp.Services
+@using PubLib.Backoffice.WebApp.Services.Publisher
+@using PubLib.Messaging.RabbitMQ.Clients.DTOs
+@using PubLib.Messaging.RabbitMQ.Clients.Consumer.BookOrder
+@using PubLib.Messaging.RabbitMQ.Clients.Consumer.Membership
+@inject MessageService MessageService
+@inject BookOrderPublisherService BookOrderPublisherService
+
+@rendermode InteractiveServer
+
+<PageTitle>Backoffice</PageTitle>
+
+<h1 class="text-center">Backoffice</h1>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 p-4 border rounded">
+            <h4 class="font-weight-bold" style="font-weight: 700;">Messages</h4> 
+            <p>Last message: @lastMessage</p>
+        </div>
+    </div>
+
+    <!-- Book Provision -->
+    <div class="row mt-4">
+        <div class="col-md-12 p-4 border rounded">
+            <div class="mb-3">
+                <h4 class="font-weight-bold" style="font-weight: 700;">Provide Book for Pickup</h4>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="userIdInput" class="text-sm">User ID</label>
+                    <input type="number" class="form-control" id="userIdInput" @bind="UserId" placeholder="1234567890">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="titleInput" class="text-sm">Book Title</label>
+                        <input type="text" class="form-control" id="titleInput" @bind="Title" placeholder="Enter Book Title">
+                    </div>
+                </div>
+
+                <div class="col-md-6 mt-2 mt-md-0">
+                    <div class="form-group">
+                        <label for="yearInput" class="text-sm">Publication Year</label>
+                        <input type="number" class="form-control" id="yearInput" @bind="PublicationYear" placeholder="2000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button class="btn btn-primary btn-sm py-2 w-100" @onclick="OnProvideBook">Provide Book</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+    private int UserId { get; set; }
+
+    private string Title { get; set; }
+
+    private int PublicationYear { get; set; }
+
+    private string lastMessage = "No message yet";
+
+    protected override void OnInitialized()
+
+    {
+        MessageService.MessageReceived += OnMessageReceived;
+    }
+
+    public void Dispose()
+
+    {
+        MessageService.MessageReceived -= OnMessageReceived;
+    }
+
+    private void OnMessageReceived(object? sender, NotificationReceivedEventArgs e)
+
+    {
+        lastMessage = $"Message from {e.QueueName}: {e.Message}";
+
+        // Refresh UI
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnProvideBook()
+    {
+
+        BookDto book = new BookDto { Title = $"{Title}", Year = PublicationYear };
+
+        BookProvisionDto bookProvision = new BookProvisionDto { Book = book, UserId = UserId };
+
+        BookOrderPublisherService.PublishNewProvision(bookProvision);
+    }
+}

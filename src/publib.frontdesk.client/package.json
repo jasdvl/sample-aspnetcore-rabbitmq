@@ -1,0 +1,45 @@
+{
+    "name": "publib.frontdesk.client",
+    "version": "0.0.0",
+    "scripts": {
+        "ng": "ng",
+        "start": "run-script-os",
+        "build": "ng build",
+        "watch": "ng build --watch --configuration development",
+        "test": "ng test",
+        "prestart": "node aspnetcore-https",
+        "start:windows": "set ASPNETCORE_HTTPS_PORT=7287 && ng serve --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\" --host=127.0.0.1",
+        "start:default": "set ASPNETCORE_HTTPS_PORT=7287 && ng serve --ssl --ssl-cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --ssl-key \"$HOME/.aspnet/https/${npm_package_name}.key\" --host=127.0.0.1"
+    },
+    "private": true,
+    "dependencies": {
+        "@angular/animations": "^18.2.6",
+        "@angular/common": "^18.2.6",
+        "@angular/compiler": "^18.2.6",
+        "@angular/forms": "^18.2.6",
+        "@angular/platform-browser": "^18.2.6",
+        "@angular/platform-browser-dynamic": "^18.2.6",
+        "@angular/router": "^18.2.6",
+        "@microsoft/signalr": "^8.0.7",
+        "autoprefixer": "^10.4.20",
+        "express": "^4.21.0",
+        "jest-editor-support": "*",
+        "postcss": "^8.4.47",
+        "run-script-os": "*",
+        "rxjs": "~7.8.0",
+        "tailwindcss": "^3.4.13",
+        "tslib": "^2.3.0",
+        "webpack-dev-server": "^5.1.0",
+        "zone.js": "^0.14.10"
+    },
+    "devDependencies": {
+        "@angular-builders/jest": "^18.0.0",
+        "@angular-devkit/build-angular": "^18.2.7",
+        "@angular/cli": "^18.2.6",
+        "@angular/compiler-cli": "^18.2.6",
+        "@types/jest": "^29.5.13",
+        "eslint": "^9.11.1",
+        "jest": "^29.7.0",
+        "typescript": ">=5.4 <5.6"
+    }
+}

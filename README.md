@@ -3,6 +3,7 @@
 This repository demonstrates how to integrate RabbitMQ into ASP.NET applications using both message publishers and consumers. The solution includes multiple projects to simulate a real-world event-driven system with RabbitMQ as the message broker. Additionally, it showcases how to manage RabbitMQ configurations through a centralized `YAML` file embedded as a resource.
 
 **Note:** This project is still under development. Features and functionalities may be added or changed in future updates.
+Also the codebase may not adhere fully to best practices and may undergo structural improvements in future updates.  
 See the [TODO List](#todo-list) for more details on planned improvements.  
 Please note that I am sometimes limited on time, so I'm unsure when I will be able to address the items on the TODO list.
 

@@ -3,6 +3,8 @@
 This repository demonstrates how to integrate RabbitMQ into ASP.NET applications using both message publishers and consumers. The solution includes multiple projects to simulate a real-world event-driven system with RabbitMQ as the message broker. Additionally, it showcases how to manage RabbitMQ configurations through a centralized `YAML` file embedded as a resource.
 
 **Note:** This project is still under development. Features and functionalities may be added or changed in future updates.
+See the [TODO List](#todo-list) for more details on planned improvements.  
+Please note that I am sometimes limited on time, so I'm unsure when I will be able to address the items on the TODO list.
 
 ## Project Overview
 
@@ -81,8 +83,8 @@ RabbitMQ:
 ### 4. **PubLib.BackOffice (Blazor)**
 
    - A Blazor Web App for managing library operations.
-   - It allows the backoffice to notify the front desk (via RabbitMQ) when a reserved book is ready for pickup.
-   - Contains RabbitMQ consumers that receive membership applications and book reservations from the front desk to process and display within the Blazor application.
+   - It allows the Back Office to notify the Front Desk (via RabbitMQ) when a reserved book is ready for pickup.
+   - Contains RabbitMQ consumers that receive membership applications and book reservations from the Front Desk to process and display within the Blazor application.
 
 ## Centralized RabbitMQ Configuration
 
@@ -159,12 +161,27 @@ dotnet run
 - Use the **PubLib.FrontDesk.Client (Angular)** to send membership applications and book reservations via the REST API.
 - These requests will be published to RabbitMQ.
 - The **PubLib.BackOffice (Blazor)** will consume these messages and display them in real time.
-- Additionally, the Backoffice can notify the Front Desk via RabbitMQ/REST when a book is ready for pickup.
+- Additionally, the Back Office can notify the Front Desk via RabbitMQ/REST when a book is ready for pickup.
 
 ## TODO List
 
+### Priority 1
+
 - Fix compiler warnings
-- Correct incorrect namespaces
+- Correct or adjust inconsistent or incorrect namespaces
 - Add XML comments
-- Replace events with Channel\<T\>
+- Replace events with Channel\<T\> (superior asynchronous messaging with built-in backpressure and concurrent producer-consumer support.)
+
+### Priority 2
+
 - Refactor code
+
+### Priority 3
+
+- Implement RPC (Remote Procedure Call) pattern for request/response handling
+- Add message prioritization to queues
+- Implement Dead Letter Queues (DLQ) for failed message handling
+- Add message TTL (Time-to-Live) for automatic message expiration
+- Implement delayed messaging for deferred processing
+- Use Quorum Queues for higher availability and reliability
+- Add federation or shovel to connect multiple RabbitMQ servers

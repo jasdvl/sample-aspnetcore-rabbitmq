@@ -124,7 +124,7 @@ Alternatively, you can explore other installation options [here](https://www.rab
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/jasdvl/demo-rabbitmq-aspnetcore.git
+git clone https://github.com/jasdvl/sample-rabbitmq-aspnetcore.git
 cd demo-rabbitmq-aspnetcore
 ```
 
@@ -158,10 +158,12 @@ dotnet run
 
 ### 4. Sending and Viewing Messages
 
-- Use the **PubLib.FrontDesk.Client (Angular)** to send membership applications and book reservations via the REST API.
+- Use the **PubLib.FrontDesk.Client** to send membership applications and book reservations via the REST API.
 - These requests will be published to RabbitMQ.
-- The **PubLib.BackOffice (Blazor)** will consume these messages and display them in real time.
-- Additionally, the Back Office can notify the Front Desk via RabbitMQ/REST when a book is ready for pickup.
+- The **PubLib.BackOffice** will consume these messages and display them in real time.
+- The **PubLib.BackOffice** can also notify the Front Desk when a reserved book is ready for pickup.
+  This notification is sent via RabbitMQ and then forwarded as a SignalR message from the **PubLib.FrontDesk.Server** to the Angular client.
+
 
 ## TODO List
 
@@ -178,10 +180,15 @@ dotnet run
 
 ### Priority 3
 
+These items are considered "nice to have" and would enhance the system's capabilities. However, I’m not sure when I will be able to address them due to time constraints:
+
 - Implement RPC (Remote Procedure Call) pattern for request/response handling
 - Add message prioritization to queues
 - Implement Dead Letter Queues (DLQ) for failed message handling
 - Add message TTL (Time-to-Live) for automatic message expiration
 - Implement delayed messaging for deferred processing
 - Use Quorum Queues for higher availability and reliability
-- Add federation or shovel to connect multiple RabbitMQ servers
+
+## Branching Strategy
+
+Since I am the sole developer on this project, I primarily work on the `main` branch. I prefer to keep things simple by committing directly to `main` for most tasks. However, if a new feature requires multiple related commits or substantial changes, I will create feature branches to manage those updates. Once the feature is complete, the branch will be merged back into `main`. My goal is to keep the main branch stable and up to date.

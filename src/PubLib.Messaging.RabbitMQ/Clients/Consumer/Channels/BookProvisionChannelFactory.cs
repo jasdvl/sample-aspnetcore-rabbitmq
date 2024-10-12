@@ -1,23 +1,9 @@
-using System.Threading.Channels;
-
 namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
 
-public interface IBookProvisionChannelFactory
+public interface IBookProvisionChannelFactory : IMessageChannelFactory<BookProvisionReceivedEventArgs>
 {
-    Channel<BookProvisionReceivedEventArgs> GetChannel();
 }
 
-public class BookProvisionChannelFactory : IBookProvisionChannelFactory
+public class BookProvisionChannelFactory : MessageChannelFactory<BookProvisionReceivedEventArgs>, IBookProvisionChannelFactory
 {
-    private readonly Channel<BookProvisionReceivedEventArgs> _channel;
-
-    public BookProvisionChannelFactory()
-    {
-        _channel = Channel.CreateUnbounded<BookProvisionReceivedEventArgs>();
-    }
-
-    public Channel<BookProvisionReceivedEventArgs> GetChannel()
-    {
-        return _channel;
-    }
 }

@@ -1,23 +1,10 @@
-using System.Threading.Channels;
-
 namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
 
-public interface IMembershipApplicationChannelFactory
+
+public interface IMembershipApplicationChannelFactory : IMessageChannelFactory<MembershipApplicationReceivedEventArgs>
 {
-    Channel<MembershipApplicationReceivedEventArgs> GetChannel();
 }
 
-public class MembershipApplicationChannelFactory : IMembershipApplicationChannelFactory
+public class MembershipApplicationChannelFactory : MessageChannelFactory<MembershipApplicationReceivedEventArgs>, IMembershipApplicationChannelFactory
 {
-    private readonly Channel<MembershipApplicationReceivedEventArgs> _channel;
-
-    public MembershipApplicationChannelFactory()
-    {
-        _channel = Channel.CreateUnbounded<MembershipApplicationReceivedEventArgs>();
-    }
-
-    public Channel<MembershipApplicationReceivedEventArgs> GetChannel()
-    {
-        return _channel;
-    }
 }

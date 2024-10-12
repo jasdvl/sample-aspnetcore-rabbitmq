@@ -1,12 +1,12 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from 'app/services/rest-api.service';
+import { BookProvisionDto } from 'app/interfaces/book-provision';
+import { BookReservationDto } from 'app/interfaces/book-reservation.dto';
 import { BookDto } from 'app/interfaces/book.dto';
 import { PersonDto } from 'app/interfaces/person.dto';
-import { BookOrderDto } from 'app/interfaces/book-order.dto';
+import { ApiService } from 'app/services/rest-api.service';
 import { SignalRService } from 'app/services/signalr.service';
 import { Subscription } from 'rxjs';
-import { BookProvisionDto } from 'app/interfaces/book-provision';
 
 @Component({
     selector: 'front-desk',
@@ -62,16 +62,15 @@ export class FrontDeskComponent implements OnInit
     {
         const book: BookDto = {
             title: title,
-            year: parseInt(year),
-            timestamp: new Date()
+            year: parseInt(year)
         };
 
-        const bookOrder: BookOrderDto = {
+        const bookReservation: BookReservationDto = {
             userId: parseInt(userId),
             book: book
         };
 
-        this.apiService.post('frontdesk/reservations/create', bookOrder).subscribe({
+        this.apiService.post('frontdesk/reservations/create', bookReservation).subscribe({
             next: (response: any) =>
             {
                 console.log('Book reservation sent.');

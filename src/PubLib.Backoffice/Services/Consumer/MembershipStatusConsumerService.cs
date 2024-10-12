@@ -1,5 +1,7 @@
 using PubLib.Messaging.RabbitMQ.Clients.Consumer;
+using PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
 using PubLib.Messaging.RabbitMQ.Clients.Consumer.Membership;
+using System.Threading.Channels;
 
 namespace PubLib.Backoffice.WebApp.Services.Consumer
 {
@@ -11,30 +13,58 @@ namespace PubLib.Backoffice.WebApp.Services.Consumer
 
         private readonly MessageService _messageService;
 
+        private readonly Channel<MembershipApplicationReceivedEventArgs> _membershipApplicationChannel;
+
         public MembershipStatusConsumerService(
-                                        MembershipStatusConsumer consumer,
                                         ILogger<MembershipStatusConsumerService> logger,
+                                        IMembershipApplicationChannelFactory membershipApplicationChannelFactory,
+                                        MembershipStatusConsumer consumer,
                                         MessageService messageService)
         {
-            _consumer = consumer;
             _logger = logger;
+            _consumer = consumer;
+            _membershipApplicationChannel = membershipApplicationChannelFactory.GetChannel();
             _messageService = messageService;
-
-            _consumer.MembershipApplied += OnMembershipApplied;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation($"Starting {nameof(MembershipStatusConsumerService)}.");
-            await _consumer.ConsumeAsync(stoppingToken);
+            await Task.WhenAll(_consumer.ConsumeAsync(stoppingToken), ProcessMembershipApplicationsAsync(stoppingToken));
         }
 
-        private void OnMembershipApplied(object? sender, MembershipApplicationReceivedEventArgs e)
+        private async Task ProcessMembershipApplicationsAsync(CancellationToken cancellationToken)
         {
-            string message = $"Membership applied: {e.Message.Person.FirstName} {e.Message.Person.LastName}.";
-            _logger.LogInformation(message);
+            try
+            {
+                await foreach (var MembershipApplication in _membershipApplicationChannel.Reader.ReadAllAsync(cancellationToken))
+                {
+                    HandleMembershipApplicationAsync(MembershipApplication);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Processing membership application was canceled.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing membership application.");
+            }
+        }
 
-            _messageService.AddMessage(message, e.QueueName);
+        private void HandleMembershipApplicationAsync(MembershipApplicationReceivedEventArgs membershipApplication)
+        {
+            try
+            {
+                string message = $"Membership applied: {membershipApplication.Message.Person.LastName}.";
+                _logger.LogInformation(message);
+                _messageService.AddMessage(message, membershipApplication.QueueName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while handling a membership application.");
+                throw;
+            }
         }
     }
 }

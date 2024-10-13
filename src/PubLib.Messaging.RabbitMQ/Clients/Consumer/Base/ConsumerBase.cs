@@ -4,17 +4,11 @@ using PubLib.Messaging.RabbitMQ.Configuration;
 using PubLib.Messaging.RabbitMQ.Infrastructure;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
 
 namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Base;
 
 public abstract class ConsumerBase : DisposableObject
 {
-    // TODO use channels
-    // private readonly Channel<(string QueueName, BasicDeliverEventArgs EventArgs)> _channel;
-
-    public virtual event EventHandler<MessageReceivedEventArgs>? MessageReceived;
-
     protected readonly IConnection _connection;
 
     protected readonly IModel _channelModel;
@@ -25,6 +19,17 @@ public abstract class ConsumerBase : DisposableObject
 
     protected List<string> _consumerTags = new List<string>();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsumerBase"/> class.
+    /// </summary>
+    /// <param name="connectionFactory">The factory for creating RabbitMQ connections.</param>
+    /// <param name="options">The options for configuring RabbitMQ.</param>
+    /// <param name="consumerName">The name of the consumer.</param>
+    /// <remarks>
+    /// This constructor sets up the basic configuration for a RabbitMQ consumer.
+    /// It uses the provided connection factory to establish a connection to RabbitMQ,
+    /// applies the specified options, and sets the consumer name.
+    /// </remarks>
     protected ConsumerBase(IRabbitMQConnectionFactory connectionFactory, IOptions<RabbitMQOptions> options, string consumerName)
     {
         _connection = connectionFactory.CreateConnection();
@@ -73,7 +78,7 @@ public abstract class ConsumerBase : DisposableObject
             var consumer = new EventingBasicConsumer(_channelModel);
             consumer.Received += async (model, ea) =>
             {
-                await HandleReceived(model, ea, queueConfig.Name);
+                await HandleReceivedAsync(ea, queueConfig.Name);
             };
 
             var consumerTag = _channelModel.BasicConsume(queue: queueConfig.Name, autoAck: true, consumer: consumer);
@@ -83,23 +88,10 @@ public abstract class ConsumerBase : DisposableObject
 
     /// <summary>
     /// Handles the received message for a specific queue asynchronously.
-    /// This is the default implementation in the base class and can be overridden in derived classes.
     /// </summary>
-    /// <param name="model">The model object representing the message producer.</param>
     /// <param name="ea">The event arguments containing delivery information and the message.</param>
     /// <param name="queueName">The name of the queue from which the message was received.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    protected virtual async Task HandleReceived(object? model, BasicDeliverEventArgs ea, string queueName)
-    {
-        var body = ea.Body.ToArray();
-        var message = Encoding.UTF8.GetString(body);
-        OnMessageReceived(new MessageReceivedEventArgs(message, queueName));
-    }
-
-    private void OnMessageReceived(MessageReceivedEventArgs e)
-    {
-        MessageReceived?.Invoke(this, e);
-    }
+    protected abstract Task HandleReceivedAsync(BasicDeliverEventArgs ea, string queueName);
 
     /// <summary>
     /// Releases the managed resources used by the object. This method is called by the Dispose method.
@@ -111,10 +103,13 @@ public abstract class ConsumerBase : DisposableObject
         foreach (var consumerTag in _consumerTags)
         {
             _channelModel.BasicCancel(consumerTag);
+
         }
 
         _channelModel.Close();
         _connection.Close();
+
+        base.DisposeManagedResources();
     }
 
     protected void InitializeQueuesAndBindings()

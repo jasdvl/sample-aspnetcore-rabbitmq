@@ -1,5 +1,6 @@
 using PubLib.Messaging.RabbitMQ.Clients.Connection;
 using PubLib.Messaging.RabbitMQ.Clients.Consumer.BookOrder;
+using PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
 using PubLib.Messaging.RabbitMQ.Clients.Publisher.BookOrder;
 using PubLib.Messaging.RabbitMQ.Clients.Publisher.Membership;
 using PubLib.Messaging.RabbitMQ.Configuration;
@@ -33,6 +34,8 @@ public class CompositionRoot()
 
         services.AddSingleton<ExchangeSetupService>();
         services.AddHostedService<RabbitMQExchangeSetupService>();
+
+        services.AddSingleton<IBookProvisionChannelFactory, BookProvisionChannelFactory>();
 
         services.AddSingleton<BookProvisionConsumer>();
 

@@ -3,43 +3,81 @@ using PubLib.FrontDesk.Server.Const;
 using PubLib.FrontDesk.Server.Messaging;
 using PubLib.Messaging.RabbitMQ.Clients.Consumer;
 using PubLib.Messaging.RabbitMQ.Clients.Consumer.BookOrder;
+using PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
+using System.Threading.Channels;
 
 namespace PubLib.Server.Services.Consumer
 {
     public class BookProvisionConsumerService : BackgroundService
     {
+        private readonly ILogger<BookProvisionConsumerService> _logger;
+
         private readonly BookProvisionConsumer _consumer;
 
         private readonly IHubContext<MessageHub> _hubContext;
 
-        private readonly ILogger<BookProvisionConsumerService> _logger;
+        private readonly IBookProvisionChannelFactory _bookProvisionChannelFactory;
+
+        private readonly Channel<BookProvisionReceivedEventArgs> _bookProvisionChannel;
 
         public BookProvisionConsumerService(
+                                        ILogger<BookProvisionConsumerService> logger,
                                         BookProvisionConsumer consumer,
-                                        IHubContext<MessageHub> hubContext,
-                                        ILogger<BookProvisionConsumerService> logger)
+                                        IBookProvisionChannelFactory bookProvisionChannelFactory,
+                                        IHubContext<MessageHub> hubContext)
         {
+            _logger = logger;
             _consumer = consumer;
             _hubContext = hubContext;
-            _logger = logger;
+            _bookProvisionChannelFactory = bookProvisionChannelFactory;
+            _bookProvisionChannel = bookProvisionChannelFactory.GetChannel();
+        }
 
-            _consumer.BookReadyForPickup += OnBookReadyForPickup;
+        public override void Dispose()
+        {
+            _bookProvisionChannelFactory.Dispose();
+            _consumer.Dispose();
+            base.Dispose();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation($"Starting {nameof(BookProvisionConsumerService)}.");
-            await _consumer.ConsumeAsync(stoppingToken);
+            await Task.WhenAll(_consumer.ConsumeAsync(stoppingToken), ProcessBookProvisionsAsync(stoppingToken));
         }
 
-        private void OnBookReadyForPickup(object? sender, BookProvisionReceivedEventArgs e)
+        private async Task ProcessBookProvisionsAsync(CancellationToken cancellationToken)
         {
-            string message = $"{e.QueueName}: Book ready for pickup: {e.BookProvision.Book.Title}";
+            try
+            {
+                await foreach (var reservation in _bookProvisionChannel.Reader.ReadAllAsync(cancellationToken))
+                {
+                    HandleBookProvisionAsync(reservation);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Processing reservations was canceled.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing reservations.");
+            }
+        }
 
-            _hubContext.Clients.Groups(SignalRGroups.FrontDesk).SendAsync("BookReadyForPickup", e.BookProvision);
-
-            _logger.LogInformation(message);
-
+        private void HandleBookProvisionAsync(BookProvisionReceivedEventArgs reservation)
+        {
+            try
+            {
+                string message = $"Book ready for pickup: {reservation.BookProvision.Book.Title}.";
+                _hubContext.Clients.Groups(SignalRGroups.FrontDesk).SendAsync("BookReadyForPickup", reservation.BookProvision);
+                _logger.LogInformation(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while handling a book provision.");
+                throw;
+            }
         }
     }
 }

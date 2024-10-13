@@ -3,6 +3,7 @@ using PubLib.Backoffice.WebApp.Services.Consumer;
 using PubLib.Backoffice.WebApp.Services.Publisher;
 using PubLib.Messaging.RabbitMQ.Clients.Connection;
 using PubLib.Messaging.RabbitMQ.Clients.Consumer.BookOrder;
+using PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
 using PubLib.Messaging.RabbitMQ.Clients.Consumer.Membership;
 using PubLib.Messaging.RabbitMQ.Clients.Publisher.BookOrder;
 using PubLib.Messaging.RabbitMQ.Configuration;
@@ -38,6 +39,10 @@ public class CompositionRoot()
         services.AddSingleton<MessageService>();
         services.AddSingleton<IRabbitMQConnectionFactory, RabbitMQConnectionFactory>();
         services.AddSingleton<ExchangeSetupService>();
+
+        services.AddSingleton<IBookReservationChannelFactory, BookReservationChannelFactory>();
+        services.AddSingleton<IMembershipApplicationChannelFactory, MembershipApplicationChannelFactory>();
+
         services.AddSingleton<BookOrderPublisher>();
         services.AddSingleton<BookOrderPublisherService>();
 

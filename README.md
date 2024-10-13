@@ -31,7 +31,7 @@ This solution simulates workflows in a public library and is divided into multip
               Durable: true
               AutoDelete: false
               Publishers:
-                - MembershipStatusPublisher
+                  - MembershipStatusPublisher
             - Name: book-order-exchange
               Type: topic
               Durable: true

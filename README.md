@@ -209,7 +209,7 @@ npm start
 - Fix compiler warnings
 - Correct or adjust inconsistent or incorrect namespaces
 - Add XML comments
-- Replace events with Channel\<T\> (superior asynchronous messaging with built-in backpressure and concurrent producer-consumer support.)
+- ~~Replace events with Channel\<T\> (superior asynchronous messaging with built-in backpressure and concurrent producer-consumer support.)~~
 
 ### Priority 2
 

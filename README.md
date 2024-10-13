@@ -21,52 +21,52 @@ This solution simulates workflows in a public library and is divided into multip
 
     ```yaml
     RabbitMQ:
-        HostName: localhost
-        Port: 5672
-        UserName: guest
-        Password: guest
-        Exchanges:
-            - Name: membership-status-exchange
-            Type: topic
-            Durable: true
-            AutoDelete: false
-            Publishers:
-                - MembershipStatusPublisher
-            - Name: book-order-exchange
-            Type: topic
-            Durable: true
-            AutoDelete: false
-            Publishers:
-                - BookOrderPublisher
-        Queues:
-            - Name: membership-status-queue
-            Durable: true
-            Exclusive: false
-            AutoDelete: false
-            Consumers:
-                - MembershipStatusConsumer
-            - Name: book-reservation-queue
-            Durable: true
-            Exclusive: false
-            AutoDelete: false
-            Consumers:
-                - BookReservationConsumer
-            - Name: book-provision-queue
-            Durable: true
-            Exclusive: false
-            AutoDelete: false
-            Consumers:
-                - BookProvisionConsumer
-        Bindings:
-            - Queue: membership-status-queue
-            Exchange: membership-status-exchange
-            BindingKey: "membership.status.*"
-            - Queue: book-reservation-queue
-            Exchange: book-order-exchange
-            BindingKey: "book.reservation.*"
-            - Queue: book-provision-queue
-            Exchange: book-order-exchange
-            BindingKey: "book.provision.*"
+    HostName: localhost
+    Port: 5672
+    UserName: guest
+    Password: guest
+    Exchanges:
+        - Name: membership-status-exchange
+          Type: topic
+          Durable: true
+          AutoDelete: false
+          Publishers:
+            - MembershipStatusPublisher
+        - Name: book-order-exchange
+          Type: topic
+          Durable: true
+          AutoDelete: false
+          Publishers:
+            - BookOrderPublisher
+    Queues:
+        - Name: membership-status-queue
+          Durable: true
+          Exclusive: false
+          AutoDelete: false
+          Consumers:
+            - MembershipStatusConsumer
+        - Name: book-reservation-queue
+          Durable: true
+          Exclusive: false
+          AutoDelete: false
+          Consumers:
+            - BookReservationConsumer
+        - Name: book-provision-queue
+          Durable: true
+          Exclusive: false
+          AutoDelete: false
+          Consumers:
+            - BookProvisionConsumer
+    Bindings:
+        - Queue: membership-status-queue
+          Exchange: membership-status-exchange
+          BindingKey: "membership.status.*"
+        - Queue: book-reservation-queue
+          Exchange: book-order-exchange
+          BindingKey: "book.reservation.*"
+        - Queue: book-provision-queue
+          Exchange: book-order-exchange
+          BindingKey: "book.provision.*"
     ```
 
 - Inject the configuration into other projects via the `AddRabbitMQConfig()` extension method:
@@ -123,7 +123,7 @@ Alternatively, you can explore other installation options [here](https://www.rab
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/jasdvl/sample-rabbitmq-aspnetcore.git
+git clone https://github.com/jasdvl/sample-aspnetcore-rabbitmq.git
 cd demo-rabbitmq-aspnetcore
 ```
 

@@ -12,6 +12,8 @@ namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Membership
 {
     public class MembershipStatusConsumer : ConsumerBase
     {
+        private readonly IMembershipApplicationChannelFactory _membershipApplicationChannelFactory;
+
         private readonly Channel<MembershipApplicationReceivedEventArgs> _membershipApplicationChannel;
 
         //private readonly Channel<MembershipApplicationReceivedEventArgs> _membershipCancelMessageChannel;
@@ -22,7 +24,18 @@ namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Membership
                                 IOptions<RabbitMQOptions> options)
             : base(connectionFactory, options, nameof(MembershipStatusConsumer))
         {
+            _membershipApplicationChannelFactory = membershipApplicationChannelFactory;
             _membershipApplicationChannel = membershipApplicationChannelFactory.GetChannel();
+        }
+
+        /// <summary>
+        /// Releases the managed resources used by the object. This method is called by the Dispose method.
+        /// Derived classes should override this method to release managed resources.
+        /// </summary>
+        protected override void DisposeManagedResources()
+        {
+            _membershipApplicationChannelFactory.Dispose();
+            base.DisposeManagedResources();
         }
 
         public override async Task ConsumeAsync(CancellationToken stoppingToken)

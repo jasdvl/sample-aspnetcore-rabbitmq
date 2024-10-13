@@ -1,3 +1,4 @@
+using PubLib.Messaging.RabbitMQ.Infrastructure;
 using System.Threading.Channels;
 
 namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
@@ -6,7 +7,7 @@ namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.Channels;
 /// Interface for a factory that provides channels for relaying messages from RabbitMQ consumers.
 /// </summary>
 /// <typeparam name="T">The type of messages relayed through the channel.</typeparam>
-public interface IMessageChannelFactory<T>
+public interface IMessageChannelFactory<T> : IDisposable
 {
     /// <summary>
     /// Gets a channel for asynchronously relaying messages from RabbitMQ consumers.
@@ -20,7 +21,7 @@ public interface IMessageChannelFactory<T>
 /// for relaying messages from RabbitMQ consumers.
 /// </summary>
 /// <typeparam name="T">The type of messages relayed through the channel.</typeparam>
-public class MessageChannelFactory<T> : IMessageChannelFactory<T>
+public class MessageChannelFactory<T> : DisposableObject, IMessageChannelFactory<T>
 {
     private readonly Channel<T> _channel;
 
@@ -40,5 +41,17 @@ public class MessageChannelFactory<T> : IMessageChannelFactory<T>
     public Channel<T> GetChannel()
     {
         return _channel;
+    }
+
+    /// <summary>
+    /// Releases the managed resources used by the instance of the <see cref="MessageChannelFactory{T}"/> class.
+    /// This method is called by the Dispose method.
+    /// Derived classes should override this method to release managed resources.
+    /// </summary>
+    protected override void DisposeManagedResources()
+    {
+        // Complete the writer to release the channel resources.
+        _channel.Writer.Complete();
+        base.DisposeManagedResources();
     }
 }

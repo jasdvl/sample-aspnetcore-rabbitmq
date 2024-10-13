@@ -12,6 +12,8 @@ namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.BookOrder
 {
     public class BookReservationConsumer : ConsumerBase
     {
+        private readonly IBookReservationChannelFactory _bookReservationChannelFactory;
+
         private readonly Channel<BookReservationReceivedEventArgs> _bookReservationChannel;
 
         public BookReservationConsumer(
@@ -20,7 +22,18 @@ namespace PubLib.Messaging.RabbitMQ.Clients.Consumer.BookOrder
                                     IBookReservationChannelFactory bookReservationChannelFactory)
             : base(connectionFactory, options, nameof(BookReservationConsumer))
         {
+            _bookReservationChannelFactory = bookReservationChannelFactory;
             _bookReservationChannel = bookReservationChannelFactory.GetChannel();
+        }
+
+        /// <summary>
+        /// Releases the managed resources used by the object. This method is called by the Dispose method.
+        /// Derived classes should override this method to release managed resources.
+        /// </summary>
+        protected override void DisposeManagedResources()
+        {
+            _bookReservationChannelFactory.Dispose();
+            base.DisposeManagedResources();
         }
 
         public override async Task ConsumeAsync(CancellationToken stoppingToken)

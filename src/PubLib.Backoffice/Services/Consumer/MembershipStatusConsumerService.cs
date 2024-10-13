@@ -13,6 +13,8 @@ namespace PubLib.Backoffice.WebApp.Services.Consumer
 
         private readonly MessageService _messageService;
 
+        private readonly IMembershipApplicationChannelFactory _membershipApplicationChannelFactory;
+
         private readonly Channel<MembershipApplicationReceivedEventArgs> _membershipApplicationChannel;
 
         public MembershipStatusConsumerService(
@@ -23,8 +25,16 @@ namespace PubLib.Backoffice.WebApp.Services.Consumer
         {
             _logger = logger;
             _consumer = consumer;
+            _membershipApplicationChannelFactory = membershipApplicationChannelFactory;
             _membershipApplicationChannel = membershipApplicationChannelFactory.GetChannel();
             _messageService = messageService;
+        }
+
+        public override void Dispose()
+        {
+            _membershipApplicationChannelFactory.Dispose();
+            _consumer.Dispose();
+            base.Dispose();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

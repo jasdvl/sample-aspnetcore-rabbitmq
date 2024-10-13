@@ -11,6 +11,8 @@ namespace PubLib.Backoffice.WebApp.Services.Consumer
 
         private readonly BookReservationConsumer _consumer;
 
+        private readonly IBookReservationChannelFactory _bookReservationChannelFactory;
+
         private readonly Channel<BookReservationReceivedEventArgs> _bookReservationChannel;
 
         private readonly MessageService _messageService;
@@ -23,8 +25,16 @@ namespace PubLib.Backoffice.WebApp.Services.Consumer
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _consumer = consumer ?? throw new ArgumentNullException(nameof(consumer));
+            _bookReservationChannelFactory = bookReservationChannelFactory;
             _bookReservationChannel = bookReservationChannelFactory.GetChannel();
             _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
+        }
+
+        public override void Dispose()
+        {
+            _bookReservationChannelFactory.Dispose();
+            _consumer.Dispose();
+            base.Dispose();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

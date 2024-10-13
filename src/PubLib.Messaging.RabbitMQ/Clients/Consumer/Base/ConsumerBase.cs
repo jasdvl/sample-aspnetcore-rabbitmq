@@ -108,6 +108,8 @@ public abstract class ConsumerBase : DisposableObject
 
         _channelModel.Close();
         _connection.Close();
+
+        base.DisposeManagedResources();
     }
 
     protected void InitializeQueuesAndBindings()

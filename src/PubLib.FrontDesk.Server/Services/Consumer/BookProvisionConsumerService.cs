@@ -16,6 +16,8 @@ namespace PubLib.Server.Services.Consumer
 
         private readonly IHubContext<MessageHub> _hubContext;
 
+        private readonly IBookProvisionChannelFactory _bookProvisionChannelFactory;
+
         private readonly Channel<BookProvisionReceivedEventArgs> _bookProvisionChannel;
 
         public BookProvisionConsumerService(
@@ -27,7 +29,15 @@ namespace PubLib.Server.Services.Consumer
             _logger = logger;
             _consumer = consumer;
             _hubContext = hubContext;
+            _bookProvisionChannelFactory = bookProvisionChannelFactory;
             _bookProvisionChannel = bookProvisionChannelFactory.GetChannel();
+        }
+
+        public override void Dispose()
+        {
+            _bookProvisionChannelFactory.Dispose();
+            _consumer.Dispose();
+            base.Dispose();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

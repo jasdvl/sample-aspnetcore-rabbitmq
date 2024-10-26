@@ -124,7 +124,7 @@ Alternatively, you can explore other installation options [here](https://www.rab
 
 ```bash
 git clone https://github.com/jasdvl/sample-aspnetcore-rabbitmq.git
-cd demo-rabbitmq-aspnetcore
+cd sample-aspnetcore-rabbitmq/src
 ```
 
 ### 3. Run the Projects

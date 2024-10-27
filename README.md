@@ -1,4 +1,6 @@
-# RabbitMQ ASP.NET Integration Sample
+# RabbitMQ ASP.NET Core Integration Sample
+
+![architecture](./assets/architecture-overview.png)
 
 This repository demonstrates how to integrate RabbitMQ into ASP.NET applications by utilizing both message publishers and consumers, with a focus on configuring RabbitMQ for client-side usage. The solution includes multiple projects to simulate a real-world event-driven system with RabbitMQ as the message broker. Additionally, it showcases how to manage RabbitMQ client configurations through a centralized `YAML` file embedded as a resource.
 

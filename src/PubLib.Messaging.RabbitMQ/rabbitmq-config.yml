@@ -1,4 +1,4 @@
-﻿RabbitMQ:
+RabbitMQ:
     HostName: localhost
     Port: 5672
     UserName: guest
@@ -9,32 +9,32 @@
           Durable: true
           AutoDelete: false
           Publishers:
-            - MembershipStatusPublisher
+              - MembershipStatusPublisher
         - Name: book-order-exchange
           Type: topic
           Durable: true
           AutoDelete: false
           Publishers:
-            - BookOrderPublisher
+              - BookOrderPublisher
     Queues:
         - Name: membership-status-queue
           Durable: true
           Exclusive: false
           AutoDelete: false
           Consumers:
-            - MembershipStatusConsumer
+              - MembershipStatusConsumer
         - Name: book-reservation-queue
           Durable: true
           Exclusive: false
           AutoDelete: false
           Consumers:
-            - BookReservationConsumer
+              - BookReservationConsumer
         - Name: book-provision-queue
           Durable: true
           Exclusive: false
           AutoDelete: false
           Consumers:
-            - BookProvisionConsumer
+              - BookProvisionConsumer
     Bindings:
         - Queue: membership-status-queue
           Exchange: membership-status-exchange

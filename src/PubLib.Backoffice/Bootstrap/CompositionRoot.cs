@@ -30,12 +30,6 @@ public class CompositionRoot()
     {
         services.Configure<RabbitMQOptions>(configuration.GetSection("RabbitMQ"));
 
-        // Singleton Services
-        // Created once for the entire lifetime of the application.
-        // The same instance is reused for all requests and components.
-        // Suitable for stateless services or global resources.
-        // Must be implemented in a thread-safe manner.
-
         services.AddSingleton<MessageService>();
         services.AddSingleton<IRabbitMQConnectionFactory, RabbitMQConnectionFactory>();
         services.AddSingleton<ExchangeSetupService>();
@@ -48,15 +42,6 @@ public class CompositionRoot()
 
         services.AddSingleton<MembershipStatusConsumer>();
         services.AddSingleton<BookReservationConsumer>();
-
-        // Scoped Services
-        // Created once per request (HTTP request).
-        // Each request gets its own instance of the service.
-        // The instance lasts for the duration of the request.
-        // Suitable for services that manage request-specific data or states.
-
-        // Hosted Services: run background tasks or long-running operations 
-        // They run independently of the request processing pipeline.
 
         services.AddHostedService<RabbitMQExchangeSetupService>();
 

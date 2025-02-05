@@ -57,7 +57,6 @@ public class CompositionRoot()
         services.AddSwaggerGen();
 
         services.AddSignalR();
-        //services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
         services.AddCors(options =>
         {

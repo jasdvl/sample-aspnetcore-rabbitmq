@@ -5,7 +5,7 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 
 const PROXY_CONFIG = [
     {
-        context: ["/api"], // Leitet alle API-Aufrufe mit /api-Präfix weiter
+        context: ["/api"], // Redirect all requests starting with "/api" to the target backend
         target,
         changeOrigin: true,
         secure: false

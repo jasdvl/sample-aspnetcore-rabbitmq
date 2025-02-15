@@ -2,24 +2,30 @@
 
 ![architecture](./assets/architecture-overview.png)
 
-This repository demonstrates how to integrate RabbitMQ into ASP.NET applications by utilizing both message publishers and consumers, with a focus on configuring RabbitMQ for client-side usage. The solution includes multiple projects to simulate a real-world event-driven system with RabbitMQ as the message broker. Additionally, it showcases how to manage RabbitMQ client configurations through a centralized `YAML` file embedded as a resource.
+## Screenshots
 
-**Note:** This project is still under development. Features and functionalities may be added or changed in future updates.
-The codebase may undergo structural improvements in future updates.  
-See the [TODO List](#todo-list) for more details on planned improvements.  
-Please note that time constraints might delay updates to the TODO list.
+Check out the [screenshots](./screenshots.md) for a visual overview.
 
 ## Project Overview
 
-This solution simulates workflows in a public library and is divided into multiple projects:
+This repository demonstrates how to integrate RabbitMQ into ASP.NET applications by utilizing both message publishers and consumers, with a focus on configuring RabbitMQ for client-side usage.  
+The solution includes multiple projects to simulate workflows in a public library with RabbitMQ as the message broker. Additionally, it showcases how to manage RabbitMQ client configurations through a centralized `YAML` file embedded as a resource.
 
-### 1. **PubLib.Messaging.RabbitMQ**
+**Note:**  
 
-- This project defines RabbitMQ consumers and publishers.
-- The RabbitMQ client configuration is managed via an embedded `rabbitmq-config.yml` file, which contains settings for exchanges, queues, bindings, and publishers/consumers.  
-  This setup is specifically for configuring the client-side interaction with RabbitMQ and does not involve server configuration.
+> This project is still under development. Features and functionalities may be added or changed in future updates.
+> The codebase may undergo structural improvements in future updates.  
+> See the [TODO List](#todo-list) for more details on planned improvements.  
+> Please note that time constraints might delay updates to the TODO list.
 
-  #### Example of the `rabbitmq-config.yml` file used for client configuration:
+### Key Components
+
+1. **PubLib.Messaging.RabbitMQ**
+   - This project defines RabbitMQ consumers and publishers.
+   - The RabbitMQ client configuration is managed via an embedded `rabbitmq-config.yml` file, which contains settings for exchanges, queues, bindings, and publishers/consumers.  
+    This setup is specifically for configuring the client-side interaction with RabbitMQ and does not involve server configuration.  
+     
+    #### Example of the `rabbitmq-config.yml` file used for client configuration:
 
     ```yaml
     RabbitMQ:
@@ -70,8 +76,8 @@ This solution simulates workflows in a public library and is divided into multip
               Exchange: book-order-exchange
               BindingKey: "book.provision.*"
     ```
-
-- Inject the configuration into other projects via the `AddRabbitMQConfig()` extension method:
+    
+    - Inject the configuration into other projects via the `AddRabbitMQConfig()` extension method:
 
     ```csharp
     public static class ConfigurationExtensions
@@ -85,19 +91,19 @@ This solution simulates workflows in a public library and is divided into multip
 
     This method enables other projects to directly load project-specific RabbitMQ settings without handling resource paths manually.
 
-### 2. **publib.frontdesk.client (Angular)**
-
+2. **publib.frontdesk.client (Angular)**
+   
    - This Angular client allows users to apply for library membership and reserve books once registered.
    - Book reservations and other actions are communicated to the ASP.NET Core backend through a REST API.
-   - The client also displays real-time notifications from the ASP.NET backend using SignalR.
+   - The client also displays real-time notifications from the ASP.NET backend using SignalR.  
 
-### 3. **PubLib.FrontDesk.Server (ASP.NET Core)**
-
+3. **PubLib.FrontDesk.Server (ASP.NET Core)**
+   
    - The backend for the Angular client, exposing REST endpoints to process membership applications and book reservations.
    - Publishes these requests as messages to RabbitMQ in JSON format.
    - Also contains a consumer that listens for notifications (e.g., book ready for pickup) from RabbitMQ and forwards them to the Angular client via SignalR.
 
-### 4. **PubLib.BackOffice (Blazor)**
+4. **PubLib.BackOffice (Blazor)**
 
    - A Blazor Web App (interactive SSR) for managing library operations.
    - It allows the Back Office to notify the Front Desk (via RabbitMQ) when a reserved book is ready for pickup.
@@ -105,10 +111,46 @@ This solution simulates workflows in a public library and is divided into multip
 
 ## Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Node.js](https://nodejs.org/en/download/) for the Angular client
 - [Docker](https://www.docker.com/) for running RabbitMQ
 - [RabbitMQ](https://www.rabbitmq.com/download.html)
+
+## Setting up the SSL/TLS Certificates (Windows)
+
+The developer certificates should be automatically created when starting the solution in Visual Studio. If this does not happen, or if the browser does not recognize the existing certificate as valid, please try the following:
+
+### 1. Angular Development Server
+
+- If ```%APPDATA%\\ASP.NET\\https\\publib.frontdesk.client.pem``` exists, it must be added to the list of Trusted Root Certification Authorities. Run the following command as an administrator:
+  
+    ```bash
+    certutil -addstore -f "Root" %APPDATA%\\ASP.NET\\https\\publib.frontdesk.client.pem
+    ```
+
+- If ```%APPDATA%\\ASP.NET\\https\\publib.frontdesk.client.pem``` does not exist, you can create a developer certificate as follows:
+  
+    ```bash
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 ^
+    -keyout %APPDATA%\\ASP.NET\\https\\publib.frontdesk.client.key ^
+    -out %APPDATA%\\ASP.NET\\https\\publib.frontdesk.client.pem ^
+    -subj "/CN=localhost" -addext "subjectAltName=IP:127.0.0.1"
+    ```
+
+    Afterward, it must be added to the list of Trusted Root Certification Authorities. To do this, run the following command with administrator privileges:
+
+    ```bash
+    certutil -addstore -f "Root" %APPDATA%\\ASP.NET\\https\\publib.frontdesk.client.pem
+    ```
+
+### 2. Blazor Web App
+
+You can regenerate the developer certificates as follows:
+
+```bash
+dotnet dev-certs https --clean
+dotnet dev-certs https --trust
+```
 
 ## Getting Started
 

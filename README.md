@@ -168,7 +168,6 @@ Alternatively, you can explore other installation options [here](https://www.rab
 
 ```bash
 git clone https://github.com/jasdvl/sample-aspnetcore-rabbitmq.git
-cd sample-aspnetcore-rabbitmq/src
 ```
 
 ### 3. Run the Projects
@@ -202,14 +201,20 @@ Follow these steps to set up the three relevant projects as startup projects.
 
 Now, all three projects will be configured to start together when you run the solution.
 
-**Note:** If you're unfamiliar with how to set multiple startup projects in Visual Studio, or you're running the solution for the first time, refer to the instructions below.  
-For additional help, you can also check the official [Visual Studio documentation](https://learn.microsoft.com/en-us/visualstudio/ide/how-to-set-multiple-startup-projects?view=vs-2022).
+**Note:**  
+> If you're unfamiliar with how to set multiple startup projects, you can check the 
+> official [Visual Studio documentation](https://learn.microsoft.com/en-us/visualstudio/ide/how-to-set-multiple-startup-projects?view=vs-2022).
 
 ---
 
 #### **3.2 Running the Solution from the Command Line**
 
-You can also run the projects manually from the command line. Follow the instructions below to run each part of the application.
+You can also run the projects manually from the command line. Follow the instructions below to run each part of the application.  
+First, navigate to the project directory:  
+
+```bash
+cd sample-aspnetcore-rabbitmq/src
+```
 
 **1. Running the Back Office (Blazor Web App)**
 
@@ -225,14 +230,14 @@ dotnet run
 First, start the ASP.NET backend for publishing messages to RabbitMQ:
 
 ```bash
-cd PubLib.FrontDesk.Server
+cd ..\PubLib.FrontDesk.Server
 dotnet run
 ```
 
 Then, start the Angular frontend by navigating to the client directory and running the following commands:
 
 ```bash
-cd publib.frontdesk.client
+cd ..\publib.frontdesk.client
 npm install
 npm start
 ```
